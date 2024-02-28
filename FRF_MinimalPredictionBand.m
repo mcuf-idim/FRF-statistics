@@ -1,6 +1,8 @@
-function [avg,sigma,band,Cp,chist,values] = FRF_PredictionBand(FRFs,phi,sample_time,alpha,B)
-%[AVG,SIGMA,VOL,CP,CHIST,VALUES] =
-%FRF_PREDICTIONBAND(FRFS,PHI,SAMPLE_TIME,B)
+function [avg,sigma,band,Cp,chist,values,alpha] = FRF_MinimalPredictionBand(X,FRFs,phi,sample_time,B)
+%[AVG,SIGMA,VOL,CP,CHIST,VALUES,ALPHA] =
+%FRF_MINIMALPREDICTIONBAND(X,FRFS,PHI,SAMPLE_TIME,B)
+% Computes the minimum Cp that includes the tested FRF X and the empirical
+% ALPHA associated with it.
 % where avg is average PIR, sigma is the measure of variation ?ˆx(t), band
 % a two row matrix with the boundaries of the band. Cp is the threshold
 % constant obtained by the bootstrap.  FRFS is a matrix where each row
@@ -14,6 +16,7 @@ ns=441;
 yt=zeros(N,ns);
 sf=1/sample_time;
 
+xt=FRF_pseudoimpulse(X,phi,sf);
 
 for i=1:N
     [x,t]=FRF_pseudoimpulse(FRFs(i,:),phi,sf);
@@ -46,10 +49,14 @@ end
 STAT=sort(STAT);
 %H=histogram(STAT,1000,'Normalization','cdf','Edgecolor','none')
 [chist, values] = histcounts(STAT,1000,'Normalization','cdf'); 
-Cp=values(find(chist>alpha,1,'first'));
+%Cp=values(find(chist>alpha,1,'first'));
 
-avg=xm;
-sigma=sx;
+[Cp,idx]=max(abs(xt-xm)./sx);
+
+alpha = chist(find(values>Cp,1,'first'));
+
+avg = xm;
+sigma = sx;
 
 band=[avg+Cp*sigma;avg-Cp*sigma];
 end
