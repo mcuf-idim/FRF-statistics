@@ -16,7 +16,7 @@ sf=1/sample_time;
 
 
 for i=1:N
-    [x,t]=pseudopulse(FRFs(i,:),phi,sf);
+    [x,t]=FRF_pseudoimpulse(FRFs(i,:),phi,sf);
     yt(i,:)=x;
 end
 
