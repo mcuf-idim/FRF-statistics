@@ -22,7 +22,7 @@ elseif nargin==6
         if metric== "squared"
             metric=@(x,y) sum((x-y).^2,2);
         elseif metric== "max"
-            metric=@(x,y) max(abs(x-y),[],2);
+            metric=@(x,y) max(abs(x-y));
         else
             error([metric,' is not a valid metric']);
         end
@@ -45,14 +45,12 @@ N=size(FRFs,1); %number of FRFs
 Ds=max(1,fix(N/20)); %make it a parameter?
 
 
+ns=441; %generalize!
 
+yt=zeros(N,ns);
 sf=1/sample_time;
 
 xt=FRF_pseudoimpulse(X,phi,sf);
-
-ns=length(xt); %generalize!
-
-yt=zeros(N,ns);
 
 for i=1:N
     [x,t]=FRF_pseudoimpulse(FRFs(i,:),phi,sf);
@@ -77,8 +75,6 @@ for b=1:B %GENERATE THE HISTOGRAM
     %et=sum((xt-xb).^2); %error on the test sample
     
     es=sort(metric(yb,xb));
-    et=metric(xt,xb);
-    
     idx=find(es>et,1,'first');
     if isempty(idx)
         idx=N;
