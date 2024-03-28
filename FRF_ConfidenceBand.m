@@ -26,7 +26,7 @@ end
     sx=std(yt);
 
 
-STAT=zeros(1,B*N);
+STAT=zeros(1,B);
 
 
 for b=1:B %GENERATE THE HISTOGRAM
