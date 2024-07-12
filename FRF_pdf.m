@@ -1,17 +1,58 @@
-function [cdf,pdf,sigma_cdf,sigma_pdf] = FRF_pdf(X,FRFs,phi,sample_time,B)
+function [cdf,pdf,sigma_cdf,sigma_pdf] = FRF_pdf(varargin)
+% [cdf,pdf,sigma_cdf,sigma_pdf] = FRF_pdf(X,FRFs,phi,sample_time,B,metric)
+%
+% estimates the cumulative densitiy function and the density function
+% associated to the sample X and a STD on their estimation. 
+% the input METRIC defines the measure used to define the distance
+% between X and the mean of the sample FRFs. By default it is the sum of
+% squared residuals
+% distance, if METRIC is a function handle it is applied directly. The
+% following strings can be specified:
+% - 'squared' sum of squared residuals
+% - 'max' maximum difference between two samples
+% 
+
+if nargin==5
+   metric=@(x,y) sum((x-y).^2,2);
+elseif nargin==6
+    metric = varargin{6};
+    if isa(metric,'function_handle')
+       disp(''); % so far do nothing and use it straightforward 
+    elseif isa(metric,'string') || isa(metric,'char')
+        if metric== "squared"
+            metric=@(x,y) sum((x-y).^2,2);
+        elseif metric== "max"
+            metric=@(x,y) max(abs(x-y),[],2);
+        else
+            error([metric,' is not a valid metric']);
+        end
+    else
+        error('METRIC must be a string or a function handle');
+    end
+    
+else
+    error('Input arguments must be 5 or 6');
+end
+X=varargin{1};
+FRFs=varargin{2};
+phi=varargin{3};
+sample_time=varargin{4};
+B=varargin{5};
 
 
 N=size(FRFs,1); %number of FRFs
 
-Dx=max(1,fix(N/20)); %make it a parameter?
+Ds=max(1,fix(N/20)); %make it a parameter?
 
 
-ns=441;
 
-yt=zeros(N,ns);
 sf=1/sample_time;
 
 xt=FRF_pseudoimpulse(X,phi,sf);
+
+ns=length(xt); %generalize!
+
+yt=zeros(N,ns);
 
 for i=1:N
     [x,t]=FRF_pseudoimpulse(FRFs(i,:),phi,sf);
@@ -32,29 +73,32 @@ for b=1:B %GENERATE THE HISTOGRAM
    
     xb=mean(yb);
     
-    es=sort(sum((yb-xb).^2,2)); %"error" for each sample
-    et=sum((xt-xb).^2) %error on the test sample
- 
+    %es=sort(sum((yb-xb).^2,2)); %"error" for each sample
+    %et=sum((xt-xb).^2); %error on the test sample
+    
+    es=sort(metric(yb,xb));
+    et=metric(xt,xb);
+    
     idx=find(es>et,1,'first');
     if isempty(idx)
         idx=N;
     end
     STAT(b)= idx/N;
         
-    i1=idx-Dx;
-    i2=idx+Dx;
+    i1=idx-Ds;
+    i2=idx+Ds;
     
     if i1<1
         i1=1;
-        i2=1+Dx;
+        i2=1+Ds;
     end
     
     if i2>N
         i2=N;
-        i1=N-Dx;
+        i1=N-Ds;
     end
     
-    dSTAT(b)=(Dx)/(es(i2)-es(i1));
+    dSTAT(b)=(Ds)/(N*(es(i2)-es(i1)));
 end
 
 cdf=mean(STAT);

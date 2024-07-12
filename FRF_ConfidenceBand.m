@@ -9,13 +9,15 @@ function [avg,sigma,band,Cc,chist,values] = FRF_ConfidenceBand(FRFs,phi,sample_t
 % representing the cumulative histogram for the values  returned in VALUES.
 
 N=size(FRFs,1); %number of FRFs
-ns=441;
 
-yt=zeros(N,ns);
 sf=1/sample_time;
 
+x1=FRF_pseudoimpulse(FRFs(1,:),phi,sf);
+ns=length(x1);
+yt=zeros(N,ns);
+yt(1,:)=x1;
 
-for i=1:N
+for i=2:N
     [x,t]=FRF_pseudoimpulse(FRFs(i,:),phi,sf);
     yt(i,:)=x;
 end
@@ -24,7 +26,7 @@ end
     sx=std(yt);
 
 
-STAT=zeros(1,B*N);
+STAT=zeros(1,B);
 
 
 for b=1:B %GENERATE THE HISTOGRAM

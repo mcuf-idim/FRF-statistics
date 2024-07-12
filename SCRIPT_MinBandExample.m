@@ -1,3 +1,4 @@
+tic
 % Test Prediction
 f1=[0.0500    0.1500    0.3000    0.4000    0.5500    0.7000    0.9000    1.1000    1.3500    1.7500    2.2000];
 load('SET1.mat');
@@ -92,3 +93,6 @@ set(gcf,'Units','inches');
 screenposition = get(gcf,'Position');
 set(gcf,'PaperPosition',[0 0 screenposition(3:4)],'PaperSize',[screenposition(3:4)]);
 print(gcf,'TimeDomainMinPrediction','-dpdf','-r0')
+toc
+% pdf estimation
+[cdf,pdf,sigma_cdf,sigma_pdf] = FRF_pdf(X,SET,f1,1/22,1000)

@@ -3,8 +3,9 @@ f1=[0.0500    0.1500    0.3000    0.4000    0.5500    0.7000    0.9000    1.1000
 load('SET1.mat');
 load('FRF_All.mat');
 FRF_=[FRF_DEC;FRF_IC;FRF_EM];
-%FRF_=FRF_*2
-%BuildFRFsamp
+
+alpha=0.95
+
 figure(1)
 
 subplot(2,1,2)
@@ -59,7 +60,7 @@ print(gcf,'DataPrediction','-dpdf','-r0')
 SET=SET1; % tautologic, it will be generalized in cross validation
 
 %% Bootstrap
-[avg,sigma,band,Cp,chist,values] = FRF_PredictionBand(SET,f1,1/22,0.95,4);
+[avg,sigma,band,Cp,chist,values] = FRF_PredictionBand(SET,f1,1/22,0.95,1000);
 
 %% plots
 ntrials=size(SET,1);

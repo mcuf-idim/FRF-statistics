@@ -11,13 +11,13 @@ function [avg,sigma,band,Cp,chist,values,alpha] = FRF_MinimalPredictionBand(X,FR
 % representing the cumulative histogram for the values  returned in VALUES.
 
 N=size(FRFs,1); %number of FRFs
-ns=441;
 
-yt=zeros(N,ns);
 sf=1/sample_time;
 
 xt=FRF_pseudoimpulse(X,phi,sf);
 
+ns=length(xt);
+yt=zeros(N,ns);
 for i=1:N
     [x,t]=FRF_pseudoimpulse(FRFs(i,:),phi,sf);
     yt(i,:)=x;
