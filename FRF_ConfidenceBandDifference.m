@@ -3,6 +3,10 @@ function [avg,sigma,band,Cc,chist,values] = FRF_ConfidenceBandDifference(FRF1,FR
 %FRF_CONFIDENCEBANDDIFFERENCE(FRFS1,FRFS2,PHI,SAMPLE_TIME,B)
 % Confidence bands on the difference between the means of two groups FRF1
 % andd FRF2.
+% 
+% This function is used to test the difference between groups where the
+% samples are not paired. For paired samples use FRF_ConfidenceBand with
+% the difference between the FRFs of the two trials as input.
 %
 % B is the number of bootstrap repetitions
 % Bs is the number of bootstrap repetitions used to estimate STD
@@ -13,7 +17,7 @@ function [avg,sigma,band,Cc,chist,values] = FRF_ConfidenceBandDifference(FRF1,FR
 % is a matrix where each row represents a FRF of the set, phi is the vector
 % of frequencies  and SAMPLE_TIME is the sample time of the PIRs. Chist is
 % a vector representing the cumulative histogram for the values  returned
-% in VALUES.
+% in VALUES. 
 
 sf=1/sample_time;
 

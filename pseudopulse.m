@@ -1,4 +1,5 @@
 function [x,t]=pseudopulse(y,F,sf)
+% Preliminary version TO BE DELETED.
 % manually computes the inverse of the FRF chosing the frequencies (11
 % components, maurer's version)
 bf=double(gcd(sym(F))); %this defines the period
